@@ -1,6 +1,6 @@
-# Amazon Euro to HUF Converter
+# Amazon Euro Converter
 
-A lightweight UserScript that automatically converts and displays Amazon prices in Hungarian Forint (HUF) next to the original Euro (EUR) prices. It is designed to provide "Revolut-ish" mid-market exchange rates rather than Amazon's often inflated currency conversion rates.
+A lightweight UserScript that automatically converts and displays Amazon prices in the desired currency next to the original Euro (EUR) prices. It is designed to provide "Revolut-ish" mid-market exchange rates rather than Amazon's often inflated currency conversion rates.
 
 ## 🚀 Features
 
@@ -25,7 +25,7 @@ You need a UserScript manager extension to run this script.
 
 2.  **Install the Script:**
     *   Create a new script in your manager.
-    *   Copy the content of `amazon.js` from this repository.
+    *   Copy the content of `AmazonPriceConverter.user.js` from this repository.
     *   Paste it into the editor and save.
 
 ## ⚙️ How it Works
