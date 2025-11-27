@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Amazon Euro to HUF Converter (Revolut-ish rates)
+// @name         Amazon Euro Converter
 // @namespace    https://violentmonkey.github.io/
-// @version      1.0
+// @version      1.1
 // @description  Converts Amazon EUR prices to HUF (or whatever needed).
 // @downloadURL  https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
 // @updateURL    https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
@@ -23,7 +23,6 @@
     const SYMBOL_TARGET = ' Ft';
 
     // --- OPTIMIZATION: PRE-COMPILE REGEX & FORMATTER ---
-    // Reusing these objects is much faster than creating them for every price tag
     const NUMBER_TEST_REGEX = /[0-9]/;
     const CLEAN_REGEX = /[^\d.,]/g;
     const COMMA_GLOBAL_REGEX = /,/g;
@@ -79,39 +78,44 @@
         const formatted = formatCurrency(euroValue * rate);
         const span = document.createElement('span');
 
-        // Identify Context
-        const isMainPagePrice = contextElement.classList.contains('a-size-xl') ||
-                                (contextElement.getAttribute('data-a-size') === 'xl') ||
-                                contextElement.closest('#corePriceDisplay_desktop_feature_div');
+        const sizeMap = {
+            'xl': '21px',
+            'l':  '17px',
+            'm':  '15px',
+            's':  '13px',
+            'mini': '11px'
+        };
 
-        const isTextPrice = contextElement.classList.contains('a-text-price');
+        let sizeKey = contextElement.getAttribute('data-a-size');
 
-        // Styling
+        if (!sizeKey) {
+            if (contextElement.classList.contains('a-size-xl')) sizeKey = 'xl';
+            else if (contextElement.classList.contains('a-size-large')) sizeKey = 'l';
+            else if (contextElement.classList.contains('a-size-medium')) sizeKey = 'm';
+            else if (contextElement.classList.contains('a-size-small')) sizeKey = 's';
+            else if (contextElement.classList.contains('a-size-mini')) sizeKey = 'mini';
+        }
+
+        if (contextElement.closest('#corePriceDisplay_desktop_feature_div')) sizeKey = 'xl';
+
+        let fontSize = sizeMap[sizeKey] || '0.9em';
+
+        if (contextElement.classList.contains('a-text-price')) {
+            fontSize = '12px';
+        }
+
         span.style.color = '#111';
         span.style.fontFamily = 'inherit';
         span.style.fontWeight = '400';
         span.style.whiteSpace = 'nowrap';
+        span.style.display = 'inline';
+        span.style.fontSize = fontSize;
 
-        if (isMainPagePrice && !isTextPrice) {
-            // STYLE A: MAIN PRICE
-            span.style.display = 'inline';
-            span.style.fontSize = '20px';
-            span.style.marginLeft = '8px';
-            span.innerText = `(≈ ${formatted})`;
-        } else {
-            // STYLE B: LIST / INLINE / CART
-            span.style.display = 'inline';
-            if (contextElement.tagName === 'H2' || contextElement.closest('h2')) {
-                span.style.fontSize = '0.75em';
-            } else {
-                span.style.fontSize = '0.9em';
-            }
+        span.style.marginLeft = (sizeKey === 'xl' || sizeKey === 'l') ? '8px' : '5px';
 
-            span.style.marginLeft = isTextPrice ? '4px' : '6px';
-            span.innerText = `(≈${formatted})`;
-        }
-
+        span.innerText = `(≈ ${formatted})`;
         span.classList.add('huf-price-tag');
+
         return span;
     }
 
@@ -154,13 +158,13 @@
         let currentRate = await getExchangeRate();
         if (!currentRate) return;
 
-        // Main conversion function
         const runConversion = () => {
             // 1. Standard Prices
             document.querySelectorAll('.a-price:not(.huf-processed)').forEach(container => {
                 const euroValue = parsePriceFromComplexElement(container);
                 if (euroValue !== null) {
                     const hufEl = createHufElement(euroValue, currentRate, container);
+
                     if (container.classList.contains('a-text-price')) {
                         container.appendChild(hufEl);
                     } else {
@@ -174,7 +178,7 @@
                 }
             });
 
-            // 2. Delivery
+            // 2. Delivery Prices
             document.querySelectorAll('[data-csa-c-delivery-price]:not(.huf-processed)').forEach(block => {
                 const deliveryPriceStr = block.getAttribute('data-csa-c-delivery-price');
                 if (deliveryPriceStr && deliveryPriceStr.toUpperCase() !== 'FREE') {
@@ -188,7 +192,7 @@
                 block.classList.add('huf-processed');
             });
 
-            // 3. Cart / Sidebar
+            // 3. Cart / Sidebar Totals
             const cartSelectors = ['.sc-price', '.ewc-subtotal-amount', '.ewc-unit-price'];
             document.querySelectorAll(cartSelectors.join(', ')).forEach(el => {
                 if (el.classList.contains('huf-processed')) return;
@@ -204,7 +208,6 @@
 
         runConversion();
 
-        // Debounce mechanism for Observer
         let debounceTimer;
         const observer = new MutationObserver(() => {
             if (debounceTimer) clearTimeout(debounceTimer);
