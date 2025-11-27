@@ -2,7 +2,7 @@
 // @name         Amazon Euro to HUF Converter (Revolut-ish rates)
 // @namespace    https://violentmonkey.github.io/
 // @version      1.0
-// @description  Converts Amazon EUR prices to HUF (of whatever needed).
+// @description  Converts Amazon EUR prices to HUF (or whatever needed).
 // @downloadURL  https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
 // @updateURL    https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
 // @match        https://www.amazon.de/*
