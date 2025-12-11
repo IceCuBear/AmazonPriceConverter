@@ -1,55 +1,118 @@
-# Amazon Euro Converter
+# Amazon Price Converter
 
-A lightweight UserScript that automatically converts and displays Amazon prices in the desired currency next to the original Euro (EUR) prices. It is designed to provide "Revolut-ish" mid-market exchange rates rather than Amazon's often inflated currency conversion rates.
+Convert Amazon prices to your preferred currency, right on the page. The script auto‑detects the site’s base currency (EUR/GBP/USD/JPY/…) and shows an inline hint with your target currency next to each price, delivery fee, and cart total.
 
-## 🚀 Features
+Current version: 2025.12.11.6
 
-*   **Real-time Exchange Rates:** Fetches current rates from `open.er-api.com`.
-*   **Smart Caching:** Caches exchange rates locally for 12 hours to minimize API calls and speed up page loads.
-*   **Native Integration:** The converted price is styled to look like part of the Amazon interface.
-*   **Wide Support:** Works on:
-    *   Product pages (Main price & secondary text prices)
-    *   Search results lists
-    *   Shopping Cart
-    *   Delivery costs
-*   **Supported Regions:** `amazon.de`, `amazon.es`, `amazon.fr`, `amazon.it`.
+Repository: https://github.com/IceCuBear/AmazonPriceConverter
 
-## 📦 Installation
+Issue tracker: https://github.com/IceCuBear/AmazonPriceConverter/issues
 
-You need a UserScript manager extension to run this script.
+## Features
 
-1.  **Install a UserScript Manager:**
-    *   [Violentmonkey](https://violentmonkey.github.io/) (Recommended)
-    *   [Tampermonkey](https://www.tampermonkey.net/)
-    *   [Greasemonkey](https://www.greasespot.net/)
+- Universal currencies
+  - Auto‑detects the base currency from the Amazon domain (.de → EUR, .co.uk → GBP, .com → USD, .co.jp → JPY, …)
+  - Lets you pick any target currency (e.g., HUF, EUR, USD, GBP, JPY, PLN, SEK, CZK, RON, TRY, AUD, CAD, CHF, NOK, DKK, MXN)
+- Inline converted price hints like `(... ≈ 12 345 Ft)` added next to:
+  - Product prices (including the main price block)
+  - Search/listing results
+  - Cart/subtotal and unit prices
+  - Delivery price badges
+- Smart formatting
+  - Auto locale and suffix per target currency (e.g., HUF → `hu‑HU` + ` Ft`, JPY → `ja‑JP` + ` ¥`)
+  - Optional “Advanced options” to override locale/suffix manually
+  - Zero fraction digits for currencies without minor units (HUF, JPY, ISK)
+- Smooth, compact UI
+  - Small white cog in Amazon’s top bar opens a draggable settings panel
+  - Click outside or press Esc to close
+  - Enable/disable, choose target currency, refresh rates
+- Efficient and respectful
+  - 12‑hour per‑base‑currency caching of rates
+  - Debounced DOM observer to avoid excessive work
+  - Uses mid‑market rates from `open.er-api.com`
 
-2.  **Install the Script:**
-    *   Create a new script in your manager.
-    *   Copy the content of `AmazonPriceConverter.user.js` from this repository.
-    *   Paste it into the editor and save.
+## 🖥Supported Amazon sites
 
-## ⚙️ How it Works
+The script matches broadly on Amazon domains and common variants:
 
-1.  The script activates on any supported Amazon domain.
-2.  It checks if it has a cached exchange rate (less than 12 hours old).
-3.  If not, it fetches the latest EUR to HUF rate from the API.
-4.  It scans the page for price elements and injects the approximate HUF value next to them (e.g., `20,00 € (≈ 8 000 Ft)`).
-5.  It uses a `MutationObserver` to handle dynamic content (like when you load more results or change product options).
+- `https://www.amazon.*/*`
+- `https://smile.amazon.*/*`
+- `https://m.amazon.*/*`
+- Explicit: `amazon.co.uk`, `amazon.co.jp`, `amazon.com.au`
 
-## 📝 Configuration
+If you find a domain that uses an unexpected base currency, please open an issue.
 
-The script works out of the box, but you can modify the constants at the top of the file if you want to adapt it for another currency:
+## Installation
 
-```javascript
-const CURRENCY_SOURCE = 'EUR';
-const CURRENCY_TARGET = 'HUF'; // Change to 'USD', 'GBP', etc.
-const SYMBOL_TARGET = ' Ft';
-```
+You need a userscript manager extension:
 
-## ⚠️ Disclaimer
+- Violentmonkey (recommended): https://violentmonkey.github.io/
+- Tampermonkey: https://www.tampermonkey.net/
+- Greasemonkey: https://www.greasespot.net/
 
-This is an unofficial script. Exchange rates are estimates based on mid-market data and may differ slightly from the final charge on your bank card.
+Then install the script:
+
+1) One‑click (Raw URL)
+
+- https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
+
+2) Manual
+
+- Create a new userscript and paste the contents of `AmazonPriceConverter.user.js`.
+
+## Usage
+
+1. Open any Amazon page. A small white cog appears in the header.
+2. Click the cog to open the panel.
+3. Pick your Target currency. The suggested locale and suffix update automatically.
+4. Optionally enable “Advanced options” to override locale and suffix.
+5. Click Save. Converted hints will appear next to prices.
+6. Use “Refresh FX” to fetch fresh exchange rates immediately (otherwise cached for ~12h).
+
+## Settings explained
+
+- Enabled: Master on/off switch for rendering the converted price hints.
+- Target currency: ISO 4217 code (HUF, EUR, USD, GBP, JPY, …).
+- Advanced options: override auto formatting
+  - Target locale: passed to `Intl.NumberFormat` (e.g., `hu-HU`, `en-GB`).
+  - Suffix: text appended after the number (e.g., ` Ft`, ` €`).
+
+By default, locale and suffix are selected automatically from a built‑in map per currency.
+
+## Permissions
+
+The userscript requests minimal permissions in its header:
+
+- `@match` for Amazon domains listed above
+- `@grant GM_xmlhttpRequest`, `@grant GM_setValue`, `@grant GM_getValue`
+- `@connect open.er-api.com` to fetch exchange rates
+- `@run-at document-idle`, `@noframes`
+
+No tracking, analytics, or external resources beyond the public rates API are used.
+
+## How it works (under the hood)
+
+1. Detect base currency from the Amazon domain (e.g., `.de` → EUR).
+2. Load your saved settings and build a locale‑aware number formatter.
+3. Obtain the base→target exchange rate from `open.er-api.com` with a 12‑hour cache per base currency.
+4. Scan price widgets, delivery badges, and cart totals, parse numeric values, and render inline hints.
+5. Watch the page with a debounced `MutationObserver` to catch dynamic changes.
+6. Provide a lightweight, draggable settings panel via the cog button.
+
+## FAQ / Troubleshooting
+
+- I don’t see the cog in the header
+  - Wait a second for Amazon to load; the script inserts it once `#nav-tools` is present.
+  - Some Amazon experiments/layouts may delay header creation; reloading the page usually helps.
+- The numbers look odd for my currency
+  - Try enabling Advanced options and set a custom locale (e.g., `de-DE` vs `fr-FR`).
+- Rates look stale
+  - Click “Refresh FX” in the panel to invalidate the cache and fetch new data.
+- I want a new currency or domain supported
+  - Open an issue with details and, if possible, example URLs.
 
 ## License
 
-This project is open source. Feel free to modify and distribute.
+GNU GPLv3 — see the userscript header. © IceCuBear
+
+This project is open source. Contributions and pull requests are welcome.
