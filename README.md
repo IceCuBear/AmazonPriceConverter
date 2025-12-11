@@ -113,5 +113,6 @@ No tracking, analytics, or external resources beyond the public rates API are us
 
 ## License
 
-Licensed under the GNU GPLv3.  
-Contributions and pull requests are welcome.
+Licensed under the GNU AGPLv3.
+
+You are free to use, modify, and share this software under the terms of the AGPLv3. If you run a modified version as a network service, the AGPL requires that you make your modified source code available to users interacting with that service. Contributions and pull requests are welcome.

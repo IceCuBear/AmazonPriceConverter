@@ -2,7 +2,7 @@
 // @name         Amazon Price Converter
 // @namespace    https://github.com/IceCuBear/AmazonPriceConverter
 // @author       IceCuBear
-// @license      GNU GPLv3
+// @license      GNU AGPLv3
 // @version      2025.12.11.6
 // @description  Converts Amazon prices to your preferred currency. Auto-detects site currency; configurable target, toggle, and QoL UI.
 // @downloadURL  https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
