@@ -1,10 +1,19 @@
 // ==UserScript==
 // @name         Amazon Price Converter
-// @namespace    amazon-price-converter
-// @version      1.2
+// @namespace    https://github.com/IceCuBear/AmazonPriceConverter
+// @author       IceCuBear
+// @license      GNU GPLv3
+// @version      2025.12.11.2
 // @description  Converts Amazon prices (EUR) to HUF and displays a local-currency hint next to prices, delivery fees, and totals.
 // @downloadURL  https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
 // @updateURL    https://raw.githubusercontent.com/IceCuBear/AmazonPriceConverter/refs/heads/main/AmazonPriceConverter.user.js
+// @homepageURL  https://github.com/IceCuBear/AmazonPriceConverter
+// @supportURL   https://github.com/IceCuBear/AmazonPriceConverter/issues
+// @source       https://github.com/IceCuBear/AmazonPriceConverter
+// @icon         https://www.amazon.de/favicon.ico
+// @icon64       https://www.amazon.de/favicon.ico
+// @run-at       document-idle
+// @noframes
 // @match        https://www.amazon.de/*
 // @match        https://www.amazon.es/*
 // @match        https://www.amazon.fr/*
