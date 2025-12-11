@@ -135,22 +135,22 @@
 
     /** Currency metadata used for automatic suffix/locale suggestions. */
     const CURRENCY_META = {
-        HUF: { suffix: ' Ft', locale: 'hu-HU', zero: true },
-        EUR: { suffix: ' €', locale: 'de-DE', zero: false },
-        USD: { suffix: ' $', locale: 'en-US', zero: false },
-        GBP: { suffix: ' £', locale: 'en-GB', zero: false },
-        PLN: { suffix: ' zł', locale: 'pl-PL', zero: false },
-        SEK: { suffix: ' kr', locale: 'sv-SE', zero: false },
-        CZK: { suffix: ' Kč', locale: 'cs-CZ', zero: false },
-        RON: { suffix: ' lei', locale: 'ro-RO', zero: false },
-        JPY: { suffix: ' ¥', locale: 'ja-JP', zero: true },
-        TRY: { suffix: ' ₺', locale: 'tr-TR', zero: false },
-        AUD: { suffix: ' A$', locale: 'en-AU', zero: false },
-        CAD: { suffix: ' C$', locale: 'en-CA', zero: false },
-        CHF: { suffix: ' CHF', locale: 'de-CH', zero: false },
-        NOK: { suffix: ' kr', locale: 'nb-NO', zero: false },
-        DKK: { suffix: ' kr', locale: 'da-DK', zero: false },
-        MXN: { suffix: ' MX$', locale: 'es-MX', zero: false },
+        HUF: {suffix: ' Ft', locale: 'hu-HU', zero: true},
+        EUR: {suffix: ' €', locale: 'de-DE', zero: false},
+        USD: {suffix: ' $', locale: 'en-US', zero: false},
+        GBP: {suffix: ' £', locale: 'en-GB', zero: false},
+        PLN: {suffix: ' zł', locale: 'pl-PL', zero: false},
+        SEK: {suffix: ' kr', locale: 'sv-SE', zero: false},
+        CZK: {suffix: ' Kč', locale: 'cs-CZ', zero: false},
+        RON: {suffix: ' lei', locale: 'ro-RO', zero: false},
+        JPY: {suffix: ' ¥', locale: 'ja-JP', zero: true},
+        TRY: {suffix: ' ₺', locale: 'tr-TR', zero: false},
+        AUD: {suffix: ' A$', locale: 'en-AU', zero: false},
+        CAD: {suffix: ' C$', locale: 'en-CA', zero: false},
+        CHF: {suffix: ' CHF', locale: 'de-CH', zero: false},
+        NOK: {suffix: ' kr', locale: 'nb-NO', zero: false},
+        DKK: {suffix: ' kr', locale: 'da-DK', zero: false},
+        MXN: {suffix: ' MX$', locale: 'es-MX', zero: false},
     };
 
     /** Compute automatic suffix and locale for a currency. */
@@ -159,7 +159,7 @@
         const meta = CURRENCY_META[iso];
         const locale = (meta && meta.locale) || (navigator.language || 'en-US');
         const suffix = (meta && meta.suffix) || (' ' + iso);
-        return { locale, suffix };
+        return {locale, suffix};
     }
 
     /** Map hostname/TLD to base currency; fallback to DOM detection later. */
@@ -357,9 +357,14 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** Adds a marker class to avoid double-processing. */
-    function markProcessed(el) { el.classList.add('apc-processed'); }
+    function markProcessed(el) {
+        el.classList.add('apc-processed');
+    }
+
     /** Quick processed check. */
-    function isProcessed(el) { return el.classList.contains('apc-processed'); }
+    function isProcessed(el) {
+        return el.classList.contains('apc-processed');
+    }
 
     /**
      * Executes a single pass that discovers price-like elements and augments
@@ -465,7 +470,10 @@
      */
     function toggleSettingsPanel() {
         const existing = document.getElementById('apc-panel');
-        if (existing) { existing.remove(); return; }
+        if (existing) {
+            existing.remove();
+            return;
+        }
         const panel = document.createElement('div');
         panel.id = 'apc-panel';
         panel.style.position = 'fixed';
@@ -497,7 +505,7 @@
                 <div style="margin-bottom:4px">Target currency (ISO):</div>
                 <select id="apc-target" style="width:100%"></select>
                 <div id="apc-auto-hint" style="font-size:12px;color:#666;margin-top:4px">
-                    Auto: locale <b>${autoFmt.locale}</b>, suffix <b>${autoFmt.suffix.replace(/</g,'&lt;')}</b>
+                    Auto: locale <b>${autoFmt.locale}</b>, suffix <b>${autoFmt.suffix.replace(/</g, '&lt;')}</b>
                 </div>
             </label>
             <div id="apc-adv-wrap" style="margin-top:8px;border-top:1px solid #eee;padding-top:8px">
@@ -531,14 +539,18 @@
             const left = Math.max(8, window.innerWidth - rect.width - 16);
             panel.style.left = left + 'px';
             panel.style.right = '';
-        } catch(_) {}
+        } catch (_) {
+        }
 
         // Populate currency select
-        const list = ['HUF','EUR','USD','GBP','PLN','SEK','CZK','RON','JPY','TRY','AUD','CAD','CHF','NOK','DKK','MXN'];
+        const list = ['HUF', 'EUR', 'USD', 'GBP', 'PLN', 'SEK', 'CZK', 'RON', 'JPY', 'TRY', 'AUD', 'CAD', 'CHF', 'NOK', 'DKK', 'MXN'];
         const sel = panel.querySelector('#apc-target');
         list.forEach(code => {
             const opt = document.createElement('option');
-            opt.value = code; opt.textContent = code; if (code === SETTINGS.targetCurrency) opt.selected = true; sel.appendChild(opt);
+            opt.value = code;
+            opt.textContent = code;
+            if (code === SETTINGS.targetCurrency) opt.selected = true;
+            sel.appendChild(opt);
         });
 
         // Update auto hint when currency changes (before save)
@@ -546,7 +558,7 @@
             const v = sel.value;
             const a = getAutoFormattingFor(v);
             const hint = panel.querySelector('#apc-auto-hint');
-            if (hint) hint.innerHTML = `Auto: locale <b>${a.locale}</b>, suffix <b>${a.suffix.replace(/</g,'&lt;')}</b>`;
+            if (hint) hint.innerHTML = `Auto: locale <b>${a.locale}</b>, suffix <b>${a.suffix.replace(/</g, '&lt;')}</b>`;
             // If override is on, do not auto-change inputs. If override is off, just update hint.
         });
 
@@ -584,7 +596,7 @@
                 targetLocale = auto.locale;
                 targetSuffix = auto.suffix;
             }
-            saveSettings({ enabled, targetCurrency, targetLocale, targetSuffix, overrideFormatting });
+            saveSettings({enabled, targetCurrency, targetLocale, targetSuffix, overrideFormatting});
             // When settings change, refresh rate and rerender
             const base = CURRENT_BASE || detectBaseCurrencyFromHost();
             CURRENT_RATE = await getExchangeRate(base, SETTINGS.targetCurrency);
@@ -642,13 +654,19 @@
                 window.removeEventListener('pointerup', endDrag);
                 window.removeEventListener('pointercancel', endDrag);
                 document.body.style.userSelect = '';
-                if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = 0;
+                }
                 // Commit final position: compute visual offsets from transform and add to base
                 const tr = panel.style.transform;
                 let tx = 0, ty = 0;
                 if (tr && tr.startsWith('translate(')) {
                     const m = tr.match(/translate\(([-\d.]+)px,\s*([\-\d.]+)px\)/);
-                    if (m) { tx = parseFloat(m[1]) || 0; ty = parseFloat(m[2]) || 0; }
+                    if (m) {
+                        tx = parseFloat(m[1]) || 0;
+                        ty = parseFloat(m[2]) || 0;
+                    }
                 }
                 const finalLeft = baseLeft + tx;
                 const finalTop = baseTop + ty;
@@ -670,11 +688,14 @@
                 const curTop = parseFloat(panel.style.top || rect.top);
                 baseLeft = isFinite(curLeft) ? curLeft : rect.left;
                 baseTop = isFinite(curTop) ? curTop : rect.top;
-                startX = e.clientX; startY = e.clientY; dx = 0; dy = 0;
+                startX = e.clientX;
+                startY = e.clientY;
+                dx = 0;
+                dy = 0;
                 panel.style.willChange = 'transform';
                 document.body.style.userSelect = 'none';
                 header.setPointerCapture?.(lastPointerId);
-                window.addEventListener('pointermove', onPointerMove, { passive: false });
+                window.addEventListener('pointermove', onPointerMove, {passive: false});
                 window.addEventListener('pointerup', endDrag);
                 window.addEventListener('pointercancel', endDrag);
                 e.preventDefault();
@@ -684,6 +705,7 @@
 
     // Close the settings panel when clicking outside of it (and not on the cog)
     let outsideCloseAttached = false;
+
     /**
      * One-time global listeners to close the panel on outside click or Esc.
      * Safe to call multiple times; attaches only once per page.
@@ -732,7 +754,7 @@
         }, 200);
         const observer = new MutationObserver(debouncedRun);
         if (document.body) {
-            observer.observe(document.body, { childList: true, subtree: true });
+            observer.observe(document.body, {childList: true, subtree: true});
         }
         // Also attach once at init
         attachOutsideClose();
